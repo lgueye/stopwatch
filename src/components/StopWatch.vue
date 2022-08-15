@@ -11,6 +11,10 @@
 import { DateTime } from "luxon";
 import { Duration } from "luxon";
 
+const DURATION_FORMAT = "hh':'mm':'ss";
+const REFRESH_FREQUENCY = 1000; // every second (1000)
+const DURATION_ZERO = Duration.fromISO("PT0S");
+
 export default {
   name: "StopWatch",
   mounted() {
@@ -19,19 +23,19 @@ export default {
   data() {
     return {
       started: null,
-      duration: null,
+      duration: Duration.fromISO(localStorage.getItem("stored-duration")),
       running: false,
       timer: null,
-      displayedDuration: Duration.fromISO("PT0S").toFormat(
-        "hh 'h' mm 'm' ss 's'"
-      ),
+      displayedDuration: Duration.fromISO(
+        localStorage.getItem("stored-duration")
+      ).toFormat(DURATION_FORMAT),
     };
   },
   methods: {
     play() {
       this.running = true;
       this.started = DateTime.now();
-      this.timer = setInterval(this.updateDuration, 1000);
+      this.timer = setInterval(this.updateDuration, REFRESH_FREQUENCY);
     },
     pause() {
       this.running = false;
@@ -41,25 +45,22 @@ export default {
     reset() {
       this.running = false;
       clearInterval(this.timer);
-      this.duration = Duration.fromISO("PT0S");
+      this.duration = DURATION_ZERO;
       this.storeDuration(this.duration);
-      this.displayedDuration = Duration.fromObject({ seconds: 0 }).toFormat(
-        "hh 'h' mm 'm' ss 's'"
-      );
+      this.displayedDuration = this.duration.toFormat(DURATION_FORMAT);
     },
     updateDuration() {
       this.duration = Duration.fromISO(this.getStoredDuration()).plus(
         DateTime.now().diff(this.started)
       );
-      this.displayedDuration = this.duration.toFormat("hh 'h' mm 'm' ss 's'");
+      this.displayedDuration = this.duration.toFormat(DURATION_FORMAT);
     },
     getStoredDuration() {
       return localStorage.getItem("stored-duration")
         ? localStorage.getItem("stored-duration")
-        : Duration.fromISO("PT0S");
+        : DURATION_ZERO;
     },
     storeDuration(duration) {
-      localStorage.getItem("stored-duration");
       localStorage.setItem("stored-duration", duration.toISO());
     },
   },
