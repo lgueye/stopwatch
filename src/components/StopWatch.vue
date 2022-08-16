@@ -1,9 +1,11 @@
 <template>
   <div>
-    {{ displayedDuration }}
-    <i class="fa fa-play" @click="play" v-if="running === false" />
-    <i class="fa fa-pause" @click="pause" v-if="running === true" />&nbsp;
-    <i class="fa fa-refresh" @click="reset" />
+    <p class="stopwatch">
+      {{ displayedDuration }}
+      <i class="fa fa-play" @click="play" v-if="running === false" />
+      <i class="fa fa-pause" @click="pause" v-if="running === true" />&nbsp;
+      <i class="fa fa-refresh" @click="reset" />
+    </p>
   </div>
 </template>
 
@@ -12,23 +14,29 @@ import { DateTime } from "luxon";
 import { Duration } from "luxon";
 
 const DURATION_FORMAT = "hh':'mm':'ss";
-const REFRESH_FREQUENCY = 1000; // every second (1000)
+const REFRESH_FREQUENCY = 1000; // every second (1000 ms)
 const DURATION_ZERO = Duration.fromISO("PT0S");
 
 export default {
   name: "StopWatch",
   mounted() {
-    this.reset();
+    this.duration = this.getStoredDuration();
+    this.displayedDuration = Duration.fromISO(this.duration).toFormat(
+      DURATION_FORMAT
+    );
+  },
+  beforeUnmount() {
+    this.storeDuration(this.duration);
+    this.running = false;
+    clearInterval(this.timer);
   },
   data() {
     return {
       started: null,
-      duration: Duration.fromISO(localStorage.getItem("stored-duration")),
+      duration: null,
       running: false,
       timer: null,
-      displayedDuration: Duration.fromISO(
-        localStorage.getItem("stored-duration")
-      ).toFormat(DURATION_FORMAT),
+      displayedDuration: null,
     };
   },
   methods: {
@@ -66,3 +74,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.stopwatch {
+  font-size: 5rem;
+}
+</style>
