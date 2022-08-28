@@ -102,3 +102,10 @@ export default {
   name: "ExtensionView",
 };
 </script>
+<style scoped>
+table {
+  display: block;
+  /* flex-wrap: nowrap; */
+  /* height: -webkit-fill-available; */
+}
+</style>

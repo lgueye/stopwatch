@@ -40,3 +40,10 @@ export default {
   components: { StopWatch },
 };
 </script>
+<style scoped>
+table {
+  display: block;
+  /* flex-wrap: nowrap; */
+  /* height: -webkit-fill-available; */
+}
+</style>

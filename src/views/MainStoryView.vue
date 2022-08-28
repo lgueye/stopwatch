@@ -234,3 +234,10 @@ export default {
   name: "MainStoryView",
 };
 </script>
+<style scoped>
+table {
+  display: block;
+  /* flex-wrap: nowrap; */
+  /* height: -webkit-fill-available; */
+}
+</style>
